@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>HearthSounds</title>
+    <link rel="icon" href="https://us.battle.net/hearthstone/static/images/icons/favicon.ico?v=58-25" type="image/x-icon" />
+    <link rel="shortcut icon" href="https://us.battle.net/hearthstone/static/images/icons/favicon.ico?v=58-25" type="image/x-icon" />
+    <link rel="stylesheet" href="hearthsounds.css" />
+</head>
+
+<body>
+    <div class="hs-container">
+        <audio id="audio-tag"></audio>
+        <audio id="audio-fail"></audio>
+        <div id="controls">
+            <input id="card-guess" />
+            <button id="sound-button">Play the Sound</button>
+        </div>
+        <br></br>
+        <div>Type in your guess above</div>
+        <div id="current-score">Score: 0</div>
+    </div>
+    <script src="card-data.js"></script>
+    <script src="hearthsoundjs.js"></script>
+</body>
+</html>
