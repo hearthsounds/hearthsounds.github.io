@@ -1,7 +1,9 @@
 var audioTag = document.getElementById('audio-tag');
 var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
-var currentScore = document.getElementById('current-score')
+var currentScore = document.getElementById('current-score');
+
+var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
 
 var sounds = [];
 
@@ -34,7 +36,11 @@ function pickRandomFailSound() {
         'VO_Hero_02_Oops_03_ALT.ogg'
     ];
 
-    return 'http://wow.zamimg.com/hearthhead/sounds/' + oopsSounds[Math.floor(Math.random() * oopsSounds.length)];
+    return SOUNDS_BASE_URL + oopsSounds[Math.floor(Math.random() * oopsSounds.length)];
+}
+
+function getSound(index) {
+    return SOUNDS_BASE_URL + sounds[index];
 }
 
 audioTag.src = sounds[guessCount].sound;
@@ -46,7 +52,7 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
                 currentScore.innerHTML = "YOU WIN! Score: " + ++guessCount;
                 document.getElementById("controls").style.visibility = "hidden";
             } else {
-                audioTag.src = sounds[++guessCount].sound;
+                audioTag.src = getSound(++guessCount);
                 currentScore.innerHTML = "Score: " + guessCount;
                 audioTag.play();
             }
