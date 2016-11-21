@@ -4,8 +4,8 @@ var inputBox = document.getElementById('card-guess');
 var currentScore = document.getElementById('current-score');
 
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
-
 var sounds = [];
+var guessCount = 0;
 
 function seedCards() {
     var chosenIndexes = [];
@@ -18,10 +18,6 @@ function seedCards() {
         sounds.push(CARDS[randomNumber]);
     }
 }
-
-seedCards();
-
-var guessCount = 0;
 
 function pickRandomFailSound() {
     var oopsSounds = [
@@ -43,7 +39,9 @@ function getSound(index) {
     return SOUNDS_BASE_URL + sounds[index];
 }
 
-audioTag.src = sounds[guessCount].sound;
+// ON BODY LOAD
+audioTag.src = getSound(guessCount);
+seedCards();
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
