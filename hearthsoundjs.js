@@ -40,7 +40,7 @@ function getSound(index) {
 }
 
 // ON BODY LOAD
-audioTag.src = getSound(guessCount]);
+audioTag.src = getSound(guessCount);
 seedCards();
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
