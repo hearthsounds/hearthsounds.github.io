@@ -41,13 +41,14 @@ audioTag.src = sounds[guessCount].sound;
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
-        if (inputBox.value === sounds[guessCount].name) {
+        if (inputBox.value.toLowerCase() === sounds[guessCount].name.toLowerCase()) {
             if (guessCount === sounds.length - 1) {
                 currentScore.innerHTML = "YOU WIN! Score: " + ++guessCount;
                 document.getElementById("controls").style.visibility = "hidden";
             } else {
                 audioTag.src = sounds[++guessCount].sound;
                 currentScore.innerHTML = "Score: " + guessCount;
+                audioTag.play();
             }
         }
         else {
