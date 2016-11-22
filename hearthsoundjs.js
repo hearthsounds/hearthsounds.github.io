@@ -40,8 +40,8 @@ function getSound(index) {
 }
 
 // ON BODY LOAD
-audioTag.src = getSound(guessCount);
 seedCards();
+audioTag.src = getSound(guessCount);
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
