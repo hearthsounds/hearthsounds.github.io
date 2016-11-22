@@ -36,7 +36,7 @@ function pickRandomFailSound() {
 }
 
 function getSound(index) {
-    return SOUNDS_BASE_URL + sounds[index];
+    return SOUNDS_BASE_URL + sounds[index].sound;
 }
 
 // ON BODY LOAD
