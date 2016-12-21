@@ -44,6 +44,7 @@ seedCards();
 audioTag.src = getSound(guessCount);
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
+    updateCardImage(e.target.value);
     if (e.keyCode === 13) {
         if (inputBox.value.toLowerCase() === sounds[guessCount].name.toLowerCase()) {
             if (guessCount === sounds.length - 1) {
@@ -66,4 +67,21 @@ document.getElementById('sound-button').addEventListener('click', function () {
     audioTag.play();
 });
 
+function setImageElement(url) {
+    var imagesDiv = document.getElementById('hs-images');
+    var img = document.createElement('img');
+    img.src = url;
+    // Ensures the div is empty 
+    while (imagesDiv.hasChildNodes()) {
+        imagesDiv.removeChild(imagesDiv.lastChild);
+    }
+    imagesDiv.appendChild(img);
+}
 
+function updateCardImage(currentInput) {
+    for (var i = 0; i < CARDS.length; i++) {
+        if (CARDS[i].name.toLowerCase() === currentInput.toLowerCase()) {
+            setImageElement(CARDS[i].img);
+        }
+    }
+}
