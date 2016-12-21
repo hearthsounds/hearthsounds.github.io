@@ -2,6 +2,8 @@ var audioTag = document.getElementById('audio-tag');
 var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScore = document.getElementById('current-score');
+var MAX_TIMER = 30;
+var timer = MAX_TIMER + 1;
 
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
 var sounds = [];
@@ -43,13 +45,26 @@ function getSound(index) {
 seedCards();
 audioTag.src = getSound(guessCount);
 
+function endGameState() {
+    if (guessCount === 10) {
+        currentScore.innerHTML = "YOU WIN! Score: " + guessCount;
+        document.getElementById("controls").style.visibility = "hidden";
+    } else {
+        currentScore.innerHTML = "YOU LOST! Score: " + guessCount;
+        document.getElementById("controls").style.visibility = "hidden";
+    }
+}
+
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
+    if (timer === MAX_TIMER + 1) {
+        timerStart();
+    }
     updateCardImage(e.target.value);
     if (e.keyCode === 13) {
         if (inputBox.value.toLowerCase() === sounds[guessCount].name.toLowerCase()) {
             if (guessCount === sounds.length - 1) {
-                currentScore.innerHTML = "YOU WIN! Score: " + ++guessCount;
-                document.getElementById("controls").style.visibility = "hidden";
+                ++guessCount;
+                endGameState();
             } else {
                 audioTag.src = getSound(++guessCount);
                 currentScore.innerHTML = "Score: " + guessCount;
@@ -84,4 +99,18 @@ function updateCardImage(currentInput) {
             setImageElement(CARDS[i].img);
         }
     }
+}
+
+function timerStart() {
+    var timerDiv = document.getElementById('hs-timer');
+    timer--;
+    timerDiv.innerHTML = timer;
+    var interval = setInterval(function () {
+        timer--;
+        timerDiv.innerHTML = timer;
+        if (timer === 0) {
+            clearInterval(interval);
+            endGameState();
+        }
+    }, 1000);
 }
