@@ -56,12 +56,24 @@ function endGameState() {
 }
 
 document.getElementById('card-guess').addEventListener('keydown', function (e) {
-    if (timer === MAX_TIMER + 1) {
-        timerStart();
+    if (e.keyCode === 9) {
+        e.preventDefault();
+        tabThroughSuggestions(e);
     }
-    updateCardImage(e.target.value);
+});
+
+document.getElementById('card-guess').addEventListener('keyup', function (e) {
+    if (e.keyCode === 9) {
+        return;
+    }
+    var currentInput = e.target.value;
+    var selectedSuggestion = null;
+    var selectedSuggestionElement = document.querySelector('#suggestions .selected');
+    if (selectedSuggestionElement) {
+        selectedSuggestion = selectedSuggestionElement.textContent;
+    }
     if (e.keyCode === 13) {
-        if (inputBox.value.toLowerCase() === sounds[guessCount].name.toLowerCase()) {
+        if (selectedSuggestion === sounds[guessCount].name) {
             if (guessCount === sounds.length - 1) {
                 ++guessCount;
                 endGameState();
@@ -70,17 +82,21 @@ document.getElementById('card-guess').addEventListener('keydown', function (e) {
                 currentScore.innerHTML = "Score: " + guessCount;
                 audioTag.play();
             }
+            e.target.value = '';
         }
         else {
             failAudio.src = pickRandomFailSound();
             failAudio.play();
         }
     }
+});
 
-    if (e.keyCode === 9) {
-        e.preventDefault();
-        tabThroughSuggestions(e);
+document.getElementById('card-guess').addEventListener('input', function (e) {
+    var currentInput = e.target.value;
+    if (timer === MAX_TIMER + 1) {
+        timerStart();
     }
+    updateUIForInput(currentInput);
 });
 
 function tabThroughSuggestions(e) {
@@ -116,13 +132,41 @@ function setImageElement(url) {
     imagesDiv.appendChild(img);
 }
 
-function updateCardImage(currentInput) {
+function updateUIForInput(currentInput) {
+    var currentInputLower = currentInput.toLowerCase();
+    var suggestions = [];
     for (var i = 0; i < CARDS.length; i++) {
-        if (CARDS[i].name.toLowerCase() === currentInput.toLowerCase()) {
-            setImageElement(CARDS[i].img);
+        var cardNameLower = CARDS[i].name.toLowerCase();
+
+        // Update Image
+        // if (cardName === currentInputLower) {
+        //     setImageElement(CARDS[i].img);
+        // }
+
+        // Update Suggestions
+        if (suggestions.length < 3 && cardNameLower.indexOf(currentInputLower) > -1) {
+            suggestions.push(CARDS[i]);
         }
     }
+    updateSuggestionsUI(suggestions);
 }
+
+function updateSuggestionsUI(suggestions) {
+    var suggestionsList = document.querySelector('#suggestions ol');
+    // Empty the suggestions list
+    while (suggestionsList.firstChild) {
+        suggestionsList.removeChild(suggestionsList.firstChild);
+    }
+    for (var i = 0; i < suggestions.length; i++) {
+        var li = document.createElement('li');
+        li.textContent = suggestions[i].name;
+        if (i === 0) {
+            li.className = 'selected';
+        }
+        suggestionsList.appendChild(li);
+    }
+}
+
 
 function timerStart() {
     var timerDiv = document.getElementById('hs-timer');
