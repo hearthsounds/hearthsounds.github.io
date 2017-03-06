@@ -48,14 +48,14 @@ audioTag.src = getSound(guessCount);
 function endGameState() {
     if (guessCount === 10) {
         currentScore.innerHTML = "YOU WIN! Score: " + guessCount;
-        document.getElementById("controls").style.visibility = "hidden";
+        document.getElementById("controls").style.display = "none";
     } else {
         currentScore.innerHTML = "YOU LOST! Score: " + guessCount;
-        document.getElementById("controls").style.visibility = "hidden";
+        document.getElementById("controls").style.display = "none";
     }
 }
 
-document.getElementById('card-guess').addEventListener('keyup', function (e) {
+document.getElementById('card-guess').addEventListener('keydown', function (e) {
     if (timer === MAX_TIMER + 1) {
         timerStart();
     }
@@ -76,7 +76,30 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
             failAudio.play();
         }
     }
+
+    if (e.keyCode === 9) {
+        e.preventDefault();
+        tabThroughSuggestions(e);
+    }
 });
+
+function tabThroughSuggestions(e) {
+    var selected = document.querySelector('#suggestions .selected');
+    var nextToSelect;
+    if (e.shiftKey) {
+        nextToSelect = selected.previousElementSibling;
+        if (nextToSelect === null) {
+            nextToSelect = selected.parentNode.lastElementChild;
+        }
+    } else {
+        nextToSelect = selected.nextElementSibling;
+        if (nextToSelect === null) {
+            nextToSelect = selected.parentNode.firstElementChild;
+        }
+    }
+    selected.className = '';
+    nextToSelect.className = 'selected';
+}
 
 document.getElementById('sound-button').addEventListener('click', function () {
     audioTag.play();
