@@ -2,7 +2,7 @@ var audioTag = document.getElementById('audio-tag');
 var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScore = document.getElementById('current-score');
-var MAX_TIMER = 30;
+var MAX_TIMER = 60;
 var timer = MAX_TIMER + 1;
 
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
@@ -50,7 +50,7 @@ function endGameState() {
         currentScore.innerHTML = "YOU WIN! Score: " + guessCount;
         document.getElementById("controls").style.display = "none";
     } else {
-        currentScore.innerHTML = "YOU LOST! Score: " + guessCount;
+        currentScore.innerHTML = "YOU LOST! Score: " + guessCount + "<br> The last card was: " + sounds[guessCount].name;
         document.getElementById("controls").style.display = "none";
     }
 }
@@ -178,6 +178,7 @@ function timerStart() {
         if (timer === 0) {
             clearInterval(interval);
             endGameState();
+
         }
     }, 1000);
 }
