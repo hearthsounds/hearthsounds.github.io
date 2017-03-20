@@ -95,8 +95,8 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
                 ++guessCount;
                 endGameState();
             } else {
-                currentScore.innerHTML = "Score: " + guessCount;
                 ++guessCount;
+                currentScore.innerHTML = "Score: " + guessCount;
                 playSound(guessCount);
             }
             e.target.value = '';
@@ -138,28 +138,11 @@ document.getElementById('sound-button').addEventListener('click', function () {
     playSound(guessCount);
 });
 
-function setImageElement(url) {
-    var imagesDiv = document.getElementById('hs-images');
-    var img = document.createElement('img');
-    img.src = url;
-    // Ensures the div is empty 
-    while (imagesDiv.hasChildNodes()) {
-        imagesDiv.removeChild(imagesDiv.lastChild);
-    }
-    imagesDiv.appendChild(img);
-}
-
 function updateUIForInput(currentInput) {
     var currentInputLower = currentInput.toLowerCase();
     var suggestions = [];
     for (var i = 0; i < CARDS.length; i++) {
         var cardNameLower = CARDS[i].name.toLowerCase();
-
-        // Update Image
-        // if (cardName === currentInputLower) {
-        //     setImageElement(CARDS[i].img);
-        // }
-
         // Update Suggestions
         if (suggestions.length < 3 && cardNameLower.indexOf(currentInputLower) > -1) {
             suggestions.push(CARDS[i]);
@@ -168,19 +151,41 @@ function updateUIForInput(currentInput) {
     updateSuggestionsUI(suggestions);
 }
 
+function createSuggestionElement(card, isSelected) {
+    var li = document.createElement('li');
+    var imgDiv = document.createElement('div');
+    var textDiv = document.createElement('div');
+    textDiv.className = 'suggestion-text';
+    imgDiv.className = 'suggestion-image';
+    textDiv.textContent = card.name;
+    var img = document.createElement('img');
+    img.className = 'suggestion-inner-img';
+    img.src = card.img;
+    if (isSelected) {
+        li.className = 'selected';
+    }
+    imgDiv.appendChild(img);
+    li.appendChild(imgDiv);
+    li.appendChild(textDiv);
+    return li;
+}
+
 function updateSuggestionsUI(suggestions) {
     var suggestionsList = document.querySelector('#suggestions ol');
     // Empty the suggestions list
     while (suggestionsList.firstChild) {
         suggestionsList.removeChild(suggestionsList.firstChild);
     }
-    for (var i = 0; i < suggestions.length; i++) {
-        var li = document.createElement('li');
-        li.textContent = suggestions[i].name;
-        if (i === 0) {
-            li.className = 'selected';
+    if (suggestions.length === 0) {
+        var emptySuggestionElement = document.createElement('img');
+        emptySuggestionElement.src = 'http://i.imgur.com/1gsci5r.jpg';
+        emptySuggestionElement.className = 'empty-suggestion';
+        suggestionsList.appendChild(emptySuggestionElement);
+    } else {
+        for (var i = 0; i < suggestions.length; i++) {
+            var li = createSuggestionElement(suggestions[i], i === 0);
+            suggestionsList.appendChild(li);
         }
-        suggestionsList.appendChild(li);
     }
 }
 
