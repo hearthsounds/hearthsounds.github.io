@@ -1,4 +1,4 @@
-var audioTag = document.getElementById('audio-tag');
+var audioContainer = document.getElementById('hs-audio-container');
 var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScore = document.getElementById('current-score');
@@ -21,6 +21,21 @@ function seedCards() {
     }
 }
 
+function getSound(index) {
+    return SOUNDS_BASE_URL + sounds[index].sound;
+}
+
+function seedAudio() {
+    while (audioContainer.hasChildNodes()) {
+        audioContainer.removeChild(audioContainer.lastChild);
+    }
+    for (var i = 0; i < sounds.length; i++) {
+        var audioTag = document.createElement('audio');
+        audioTag.src = getSound(i);
+        audioContainer.appendChild(audioTag);
+    }
+}
+
 function pickRandomFailSound() {
     var oopsSounds = [
         'VO_HERO_01_Oops_03.ogg',
@@ -37,13 +52,15 @@ function pickRandomFailSound() {
     return SOUNDS_BASE_URL + oopsSounds[Math.floor(Math.random() * oopsSounds.length)];
 }
 
-function getSound(index) {
-    return SOUNDS_BASE_URL + sounds[index].sound;
+function playSound(index) {
+    failAudio.pause();
+    failAudio.currentTime = 0;
+    audioContainer.childNodes[index].play();
 }
 
 // ON BODY LOAD
 seedCards();
-audioTag.src = getSound(guessCount);
+seedAudio();
 
 function endGameState() {
     if (guessCount === 10) {
@@ -78,9 +95,9 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
                 ++guessCount;
                 endGameState();
             } else {
-                audioTag.src = getSound(++guessCount);
                 currentScore.innerHTML = "Score: " + guessCount;
-                audioTag.play();
+                ++guessCount;
+                playSound(guessCount);
             }
             e.target.value = '';
         }
@@ -118,7 +135,7 @@ function tabThroughSuggestions(e) {
 }
 
 document.getElementById('sound-button').addEventListener('click', function () {
-    audioTag.play();
+    playSound(guessCount);
 });
 
 function setImageElement(url) {
