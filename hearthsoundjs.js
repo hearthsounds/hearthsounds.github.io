@@ -4,8 +4,12 @@ var inputBox = document.getElementById('card-guess');
 var currentScoreElement = document.getElementById('current-score');
 var timerElement = document.getElementById('hs-timer');
 
-var MAX_TIMER = 2;
+var MAX_TIMER = 60;
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
+var LEFTARROW_KEY_CODE = 37;
+var RIGHTARROW_KEY_CODE = 39;
+var TAB_KEY_CODE = 9;
+var ENTER_KEY_CODE = 13;
 
 var timer = MAX_TIMER + 1;
 var sounds = [];
@@ -103,14 +107,18 @@ function endGameState() {
 }
 
 document.getElementById('card-guess').addEventListener('keydown', function (e) {
-    if (e.keyCode === 9) {
+    if (e.keyCode === TAB_KEY_CODE || 
+        e.keyCode === LEFTARROW_KEY_CODE || 
+        e.keyCode === RIGHTARROW_KEY_CODE) {
         e.preventDefault();
-        tabThroughSuggestions(e);
+        // forwards - no shift + tab or right arrow key
+        var isForwards = (!e.shiftKey && e.keyCode === TAB_KEY_CODE) || e.keyCode === RIGHTARROW_KEY_CODE;
+        tabThroughSuggestions(isForwards);
     }
 });
 
 document.getElementById('card-guess').addEventListener('keyup', function (e) {
-    if (e.keyCode === 9) {
+    if (e.keyCode === TAB_KEY_CODE) {
         return;
     }
     var currentInput = e.target.value;
@@ -119,7 +127,7 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
     if (selectedSuggestionElement) {
         selectedSuggestion = selectedSuggestionElement.textContent;
     }
-    if (e.keyCode === 13) {
+    if (e.keyCode === ENTER_KEY_CODE) {
         if (selectedSuggestion === sounds[currentSoundIndex].name) {
             ++currentScore;
             incrementSoundIndex();
@@ -143,10 +151,10 @@ document.getElementById('card-guess').addEventListener('input', function (e) {
     updateUIForInput(currentInput);
 });
 
-function tabThroughSuggestions(e) {
+function tabThroughSuggestions(isForwards) {
     var selected = document.querySelector('#suggestions .selected');
     var nextToSelect;
-    if (e.shiftKey) {
+    if (!isForwards) {
         nextToSelect = selected.previousElementSibling;
         if (nextToSelect === null) {
             nextToSelect = selected.parentNode.lastElementChild;
