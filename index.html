@@ -27,9 +27,6 @@
             <audio src="//media-hearth.cursecdn.com/audio/card-sounds/sound/VO_Hero_02_Oops_03_ALT.ogg"></audio>
         </div>
         <div id="controls">
-            <div id="hs-timer">
-                Type to begin
-            </div>
             <div id="suggestions">
                 <ol>
                     <li class="selected">
@@ -46,14 +43,18 @@
                     </li>
                 </ol>
             </div>
+            <div id="hs-timer">
+                Type to begin
+            </div>
             <input id="card-guess" />
-            <button id="sound-button">Play the Sound</button>
-            <button disabled id="skip-button">Skip (3 second penalty)</button>
-            <div class="hs-instructions">Type in your guess above</div>
+            <div class="buttons">
+                <button id="sound-button">Play the sound [ALT + R]</button>
+                <button disabled id="skip-button">Skip (3 second penalty) [ESC]</button>
+            </div>
         </div>
         <div id="current-score">Score: 0</div>
         <div id="endgame">
-            <button id="restart-button">Play again</button>
+            <button id="restart-button">Play again [ALT + R]</button>
         </div>
     </div>
     <script src="card-data.js"></script>

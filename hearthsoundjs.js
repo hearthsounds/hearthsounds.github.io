@@ -6,16 +6,22 @@ var timerElement = document.getElementById('hs-timer');
 
 var MAX_TIMER = 60;
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
+var NEW_GAME_STATE = 0;
+var IN_GAME_STATE = 1;
+var END_GAME_STATE = 2;
 var LEFTARROW_KEY_CODE = 37;
 var RIGHTARROW_KEY_CODE = 39;
 var TAB_KEY_CODE = 9;
 var ENTER_KEY_CODE = 13;
+var R_KEY_CODE = 82;
+var ESC_KEY_CODE = 27;
 
 var timer = MAX_TIMER + 1;
 var sounds = [];
 var availableSoundIndexes = [];
 var currentScore = 0;
 var currentSoundIndex = 0;
+var timerInterval;
 
 function seedCards(cardsToAdd) {
     if (availableSoundIndexes.length === 0) {
@@ -51,23 +57,28 @@ function playRandomFailSound() {
     var audioTags = failAudioContainer.getElementsByTagName('audio');
     var randomNumber = Math.floor(Math.random() * audioTags.length);
     pauseAllSounds();
-    audioTags[randomNumber].play();    
+    audioTags[randomNumber].play();
 }
 
-function playSound(index) {
+function playCurrentSound() {
     pauseAllSounds();
-    audioContainer.getElementsByTagName('audio')[index].play();
+    audioContainer.getElementsByTagName('audio')[currentSoundIndex].play();
 }
 
 function skipSound() {
     decrementTimer(3);
     incrementSoundIndex();
-    playSound(currentSoundIndex);
+    playCurrentSound();
     inputBox.value = '';
 }
 
 function decrementTimer(seconds) {
     timer -= seconds;
+    if (timer <= 0) {
+        timer = 0;
+        clearInterval(timerInterval);
+        endGameState();
+    }
     timerElement.innerHTML = timer;
 }
 
@@ -83,7 +94,7 @@ function pauseAllSounds() {
     for (var i = 0; i < failAudioTags.length; i++) {
         failAudioTags[i].pause();
         failAudioTags[i].currentTime = 0;
-    } 
+    }
     var audioTags = audioContainer.getElementsByTagName('audio')
     for (var i = 0; i < audioTags.length; i++) {
         audioTags[i].pause();
@@ -93,6 +104,7 @@ function pauseAllSounds() {
 
 // ON BODY LOAD
 seedCards(10);
+inputBox.focus();
 
 function endGameState() {
     currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
@@ -100,14 +112,40 @@ function endGameState() {
     document.getElementById("endgame").style.display = "block";
 }
 
-document.getElementById('card-guess').addEventListener('keydown', function (e) {
-    if (e.keyCode === TAB_KEY_CODE || 
-        e.keyCode === LEFTARROW_KEY_CODE || 
+function getGameState() {
+    if (timer === 0) {
+        return END_GAME_STATE;
+    } else if (timer === MAX_TIMER + 1) {
+        return NEW_GAME_STATE;
+    } else {
+        return IN_GAME_STATE;
+    }
+}
+
+document.body.addEventListener('keydown', function (e) {
+    if (e.keyCode === TAB_KEY_CODE ||
+        e.keyCode === LEFTARROW_KEY_CODE ||
         e.keyCode === RIGHTARROW_KEY_CODE) {
+        if (getGameState() !== IN_GAME_STATE) {
+            return;
+        }
         e.preventDefault();
         // forwards - no shift + tab or right arrow key
         var isForwards = (!e.shiftKey && e.keyCode === TAB_KEY_CODE) || e.keyCode === RIGHTARROW_KEY_CODE;
         tabThroughSuggestions(isForwards);
+    } else if (e.keyCode === ESC_KEY_CODE) {
+        if (getGameState() !== IN_GAME_STATE) {
+            return;
+        }
+        e.preventDefault();
+        skipSound();
+    } else if (e.keyCode === R_KEY_CODE && e.altKey) {
+        e.preventDefault();
+        if (getGameState() !== END_GAME_STATE) {
+            playCurrentSound();
+        } else if (getGameState() === END_GAME_STATE) {
+            restartGame();
+        }
     }
 });
 
@@ -126,7 +164,7 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
             ++currentScore;
             incrementSoundIndex();
             currentScoreElement.innerHTML = "Score: " + currentScore;
-            playSound(currentSoundIndex);
+            playCurrentSound();
             e.target.value = '';
         }
         else {
@@ -166,14 +204,16 @@ function tabThroughSuggestions(isForwards) {
 }
 
 document.getElementById('sound-button').addEventListener('click', function () {
-    playSound(currentSoundIndex);
+    playCurrentSound();
 });
 
 document.getElementById('skip-button').addEventListener('click', function () {
     skipSound();
 });
 
-document.getElementById('restart-button').addEventListener('click', function () {
+document.getElementById('restart-button').addEventListener('click', restartGame);
+
+function restartGame() {
     while (audioContainer.firstChild) {
         audioContainer.removeChild(audioContainer.firstChild);
     }
@@ -187,9 +227,11 @@ document.getElementById('restart-button').addEventListener('click', function () 
     inputBox.value = '';
     updateUIForInput('');
     seedCards(10);
+    document.getElementById("skip-button").setAttribute('disabled', 1);
     document.getElementById("controls").style.display = "block";
     document.getElementById("endgame").style.display = "none";
-});
+    inputBox.focus();
+}
 
 function updateUIForInput(currentInput) {
     var currentInputLower = currentInput.toLowerCase();
@@ -245,13 +287,7 @@ function updateSuggestionsUI(suggestions) {
 
 function timerStart() {
     decrementTimer(1);
-    var interval = setInterval(function () {
+    timerInterval = setInterval(function () {
         decrementTimer(1);
-        if (timer <= 0) {
-            timer = 0;
-            clearInterval(interval);
-            endGameState();
-        }
-        timerElement.innerHTML = timer;
     }, 1000);
 }

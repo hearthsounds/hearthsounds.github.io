@@ -35,7 +35,7 @@ body {
 .suggestion-text {
     z-index: -1; 
     position: absolute; 
-    top: 450px;
+    top: 420px;
     width: 300px;
 }
 
@@ -52,6 +52,16 @@ body {
     padding-top: 10px;
 }
 
-.hs-instructions {
-    padding-top: 10px;
+#hs-timer {
+    font-size: 2em;
+    padding: 10px;
+}
+
+#controls .buttons {
+    padding: 10px;
+}
+
+#card-guess {
+    font-size: 2em;
+    margin: 10px;
 }
