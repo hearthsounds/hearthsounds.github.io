@@ -3,10 +3,11 @@ var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScoreElement = document.getElementById('current-score');
 var timerElement = document.getElementById('hs-timer');
-var MAX_TIMER = 60;
-var timer = MAX_TIMER + 1;
 
+var MAX_TIMER = 2;
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
+
+var timer = MAX_TIMER + 1;
 var sounds = [];
 var availableSoundIndexes = [];
 var currentScore = 0;
@@ -98,6 +99,7 @@ seedCards(10);
 function endGameState() {
     currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
     document.getElementById("controls").style.display = "none";
+    document.getElementById("endgame").style.display = "block";
 }
 
 document.getElementById('card-guess').addEventListener('keydown', function (e) {
@@ -165,6 +167,24 @@ document.getElementById('sound-button').addEventListener('click', function () {
 
 document.getElementById('skip-button').addEventListener('click', function () {
     skipSound();
+});
+
+document.getElementById('restart-button').addEventListener('click', function () {
+    while (audioContainer.firstChild) {
+        audioContainer.removeChild(audioContainer.firstChild);
+    }
+    timer = MAX_TIMER + 1;
+    sounds = [];
+    availableSoundIndexes = [];
+    currentScore = 0;
+    currentSoundIndex = 0;
+    timerElement.innerHTML = 'Type to begin';
+    currentScoreElement.innerHTML = 'Score: ' + currentScore;
+    inputBox.value = '';
+    updateUIForInput('');
+    seedCards(10);
+    document.getElementById("controls").style.display = "block";
+    document.getElementById("endgame").style.display = "none";
 });
 
 function updateUIForInput(currentInput) {

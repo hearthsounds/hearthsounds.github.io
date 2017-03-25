@@ -42,3 +42,16 @@ body {
 .suggestion-inner-img {
     height: 450px;
 }
+
+#endgame {
+    display: none;
+    padding-top: 10px;
+}
+
+#current-score {
+    padding-top: 10px;
+}
+
+.hs-instructions {
+    padding-top: 10px;
+}
