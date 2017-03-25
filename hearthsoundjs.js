@@ -96,7 +96,7 @@ function pauseAllSounds() {
 seedCards(10);
 
 function endGameState() {
-    currentScoreElement.innerHTML = "Well done! Score: " + currentScore;
+    currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
     document.getElementById("controls").style.display = "none";
 }
 
