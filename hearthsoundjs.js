@@ -105,6 +105,7 @@ function pauseAllSounds() {
 // ON BODY LOAD
 seedCards(10);
 inputBox.focus();
+updateUIForInput('');
 
 function endGameState() {
     currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
@@ -126,10 +127,10 @@ document.body.addEventListener('keydown', function (e) {
     if (e.keyCode === TAB_KEY_CODE ||
         e.keyCode === LEFTARROW_KEY_CODE ||
         e.keyCode === RIGHTARROW_KEY_CODE) {
+        e.preventDefault();
         if (getGameState() !== IN_GAME_STATE) {
             return;
         }
-        e.preventDefault();
         // forwards - no shift + tab or right arrow key
         var isForwards = (!e.shiftKey && e.keyCode === TAB_KEY_CODE) || e.keyCode === RIGHTARROW_KEY_CODE;
         tabThroughSuggestions(isForwards);

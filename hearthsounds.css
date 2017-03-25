@@ -23,8 +23,18 @@ body {
     border: 1px solid transparent;
 }
 
-#suggestions .selected {
-    border: 1px solid red;
+#suggestions .selected img {
+    transform: scale(1.2);
+    transition: ease-in-out 0.1s;
+}
+
+#suggestions .selected .suggestion-text {
+    text-decoration: underline;
+}
+
+#suggestions img {
+    transform: scale(1);
+    transition: ease-in-out 0.1s;
 }
 
 .suggestion-image {
