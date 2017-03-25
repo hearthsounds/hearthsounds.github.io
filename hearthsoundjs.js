@@ -1,39 +1,45 @@
 var audioContainer = document.getElementById('hs-audio-container');
 var failAudio = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
-var currentScore = document.getElementById('current-score');
+var currentScoreElement = document.getElementById('current-score');
+var timerElement = document.getElementById('hs-timer');
 var MAX_TIMER = 60;
 var timer = MAX_TIMER + 1;
 
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
 var sounds = [];
-var guessCount = 0;
+var availableSoundIndexes = [];
+var currentScore = 0;
+var currentSoundIndex = 0;
 
-function seedCards() {
-    var chosenIndexes = [];
-    while (sounds.length < 10) {
-        var randomNumber = Math.floor(Math.random() * CARDS.length);
-        if (chosenIndexes.indexOf(randomNumber) > -1) {
-            continue;
+function seedCards(cardsToAdd) {
+    if (availableSoundIndexes.length === 0) {
+        // seed available sound availableSoundIndexes
+        for (var i = 0; i < CARDS.length; i++) {
+            availableSoundIndexes.push(i);
         }
-        chosenIndexes.push(randomNumber);
-        sounds.push(CARDS[randomNumber]);
     }
-}
-
-function getSound(index) {
-    return SOUNDS_BASE_URL + sounds[index].sound;
-}
-
-function seedAudio() {
-    while (audioContainer.hasChildNodes()) {
-        audioContainer.removeChild(audioContainer.lastChild);
+    var startingSoundsLength = sounds.length;
+    while (sounds.length < startingSoundsLength + cardsToAdd) {
+        // generate valid index for availableSoundIndexes
+        var randomNumber = Math.floor(Math.random() * availableSoundIndexes.length);
+        // store chosen CARDS index number and remove it from availableSoundIndexes
+        var chosenSoundIndex = availableSoundIndexes.splice(randomNumber, 1)[0];
+        // add chosen CARDS index info to sounds array
+        sounds.push(CARDS[chosenSoundIndex]);
     }
-    for (var i = 0; i < sounds.length; i++) {
+
+    // seed audio for new cards
+    var audioTags = audioContainer.getElementsByTagName('audio');
+    for (var i = audioTags.length; i < sounds.length; i++) {
         var audioTag = document.createElement('audio');
-        audioTag.src = getSound(i);
+        audioTag.src = getSoundUrl(i);
         audioContainer.appendChild(audioTag);
     }
+}
+
+function getSoundUrl(index) {
+    return SOUNDS_BASE_URL + sounds[index].sound;
 }
 
 function pickRandomFailSound() {
@@ -53,23 +59,45 @@ function pickRandomFailSound() {
 }
 
 function playSound(index) {
+    pauseAllSounds();
+    audioContainer.getElementsByTagName('audio')[index].play();
+}
+
+function skipSound() {
+    decrementTimer(3);
+    incrementSoundIndex();
+    playSound(currentSoundIndex);
+    inputBox.value = '';
+}
+
+function decrementTimer(seconds) {
+    timer -= seconds;
+    timerElement.innerHTML = timer;
+}
+
+function incrementSoundIndex() {
+    currentSoundIndex++;
+    if (sounds.length - currentSoundIndex <= 5) {
+        seedCards(5);
+    }
+}
+
+function pauseAllSounds() {
     failAudio.pause();
     failAudio.currentTime = 0;
-    audioContainer.childNodes[index].play();
+    var audioTags = audioContainer.getElementsByTagName('audio')
+    for (var i = 0; i < audioTags.length; i++) {
+        audioTags[i].pause();
+        audioTags[i].currentTime = 0;
+    }
 }
 
 // ON BODY LOAD
-seedCards();
-seedAudio();
+seedCards(10);
 
 function endGameState() {
-    if (guessCount === 10) {
-        currentScore.innerHTML = "YOU WIN! Score: " + guessCount;
-        document.getElementById("controls").style.display = "none";
-    } else {
-        currentScore.innerHTML = "YOU LOST! Score: " + guessCount + "<br> The last card was: " + sounds[guessCount].name;
-        document.getElementById("controls").style.display = "none";
-    }
+    currentScoreElement.innerHTML = "Well done! Score: " + currentScore;
+    document.getElementById("controls").style.display = "none";
 }
 
 document.getElementById('card-guess').addEventListener('keydown', function (e) {
@@ -90,15 +118,11 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
         selectedSuggestion = selectedSuggestionElement.textContent;
     }
     if (e.keyCode === 13) {
-        if (selectedSuggestion === sounds[guessCount].name) {
-            if (guessCount === sounds.length - 1) {
-                ++guessCount;
-                endGameState();
-            } else {
-                ++guessCount;
-                currentScore.innerHTML = "Score: " + guessCount;
-                playSound(guessCount);
-            }
+        if (selectedSuggestion === sounds[currentSoundIndex].name) {
+            ++currentScore;
+            incrementSoundIndex();
+            currentScoreElement.innerHTML = "Score: " + currentScore;
+            playSound(currentSoundIndex);
             e.target.value = '';
         }
         else {
@@ -112,6 +136,7 @@ document.getElementById('card-guess').addEventListener('input', function (e) {
     var currentInput = e.target.value;
     if (timer === MAX_TIMER + 1) {
         timerStart();
+        document.getElementById('skip-button').removeAttribute('disabled');
     }
     updateUIForInput(currentInput);
 });
@@ -135,7 +160,11 @@ function tabThroughSuggestions(e) {
 }
 
 document.getElementById('sound-button').addEventListener('click', function () {
-    playSound(guessCount);
+    playSound(currentSoundIndex);
+});
+
+document.getElementById('skip-button').addEventListener('click', function () {
+    skipSound();
 });
 
 function updateUIForInput(currentInput) {
@@ -191,16 +220,14 @@ function updateSuggestionsUI(suggestions) {
 
 
 function timerStart() {
-    var timerDiv = document.getElementById('hs-timer');
-    timer--;
-    timerDiv.innerHTML = timer;
+    decrementTimer(1);
     var interval = setInterval(function () {
-        timer--;
-        timerDiv.innerHTML = timer;
-        if (timer === 0) {
+        decrementTimer(1);
+        if (timer <= 0) {
+            timer = 0;
             clearInterval(interval);
             endGameState();
-
         }
+        timerElement.innerHTML = timer;
     }, 1000);
 }
