@@ -1,5 +1,5 @@
 var audioContainer = document.getElementById('hs-audio-container');
-var failAudio = document.getElementById('audio-fail')
+var failAudioContainer = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScoreElement = document.getElementById('current-score');
 var timerElement = document.getElementById('hs-timer');
@@ -47,20 +47,11 @@ function getSoundUrl(index) {
     return SOUNDS_BASE_URL + sounds[index].sound;
 }
 
-function pickRandomFailSound() {
-    var oopsSounds = [
-        'VO_HERO_01_Oops_03.ogg',
-        'VO_HERO_03_Oops_03.ogg',
-        'VO_HERO_04_Oops_03.ogg',
-        'VO_HERO_05_Oops_03.ogg',
-        'VO_HERO_06_Oops_03.ogg',
-        'VO_HERO_07_Oops_03.ogg',
-        'VO_HERO_08_Oops_58.ogg',
-        'VO_HERO_09_Oops_03.ogg',
-        'VO_Hero_02_Oops_03_ALT.ogg'
-    ];
-
-    return SOUNDS_BASE_URL + oopsSounds[Math.floor(Math.random() * oopsSounds.length)];
+function playRandomFailSound() {
+    var audioTags = failAudioContainer.getElementsByTagName('audio');
+    var randomNumber = Math.floor(Math.random() * audioTags.length);
+    pauseAllSounds();
+    audioTags[randomNumber].play();    
 }
 
 function playSound(index) {
@@ -88,8 +79,11 @@ function incrementSoundIndex() {
 }
 
 function pauseAllSounds() {
-    failAudio.pause();
-    failAudio.currentTime = 0;
+    var failAudioTags = failAudioContainer.getElementsByTagName('audio')
+    for (var i = 0; i < failAudioTags.length; i++) {
+        failAudioTags[i].pause();
+        failAudioTags[i].currentTime = 0;
+    } 
     var audioTags = audioContainer.getElementsByTagName('audio')
     for (var i = 0; i < audioTags.length; i++) {
         audioTags[i].pause();
@@ -136,8 +130,7 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
             e.target.value = '';
         }
         else {
-            failAudio.src = pickRandomFailSound();
-            failAudio.play();
+            playRandomFailSound();
         }
     }
 });
@@ -153,6 +146,9 @@ document.getElementById('card-guess').addEventListener('input', function (e) {
 
 function tabThroughSuggestions(isForwards) {
     var selected = document.querySelector('#suggestions .selected');
+    if (!selected) {
+        return;
+    }
     var nextToSelect;
     if (!isForwards) {
         nextToSelect = selected.previousElementSibling;
