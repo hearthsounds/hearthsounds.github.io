@@ -279,7 +279,8 @@ function updateSuggestionsUI(suggestions) {
         suggestionsList.appendChild(emptySuggestionElement);
     } else {
         for (var i = 0; i < suggestions.length; i++) {
-            var li = createSuggestionElement(suggestions[i], i === 0);
+            var isSelected = (i === 0 && getGameState() === IN_GAME_STATE); 
+            var li = createSuggestionElement(suggestions[i], isSelected);
             suggestionsList.appendChild(li);
         }
     }
