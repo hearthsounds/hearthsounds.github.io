@@ -6,6 +6,7 @@ var timerElement = document.getElementById('hs-timer');
 
 var MAX_TIMER = 60;
 var SOUNDS_BASE_URL = '//media-hearth.cursecdn.com/audio/card-sounds/sound/';
+var IMG_BASE_URL = 'http://media.services.zam.com/v1/media/byName';
 var NEW_GAME_STATE = 0;
 var IN_GAME_STATE = 1;
 var END_GAME_STATE = 2;
@@ -256,7 +257,7 @@ function createSuggestionElement(card, isSelected) {
     textDiv.textContent = card.name;
     var img = document.createElement('img');
     img.className = 'suggestion-inner-img';
-    img.src = card.img;
+    img.src = IMG_BASE_URL + card.img;
     if (isSelected) {
         li.className = 'selected';
     }
