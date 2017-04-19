@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>HearthSounds</title>
+    <title>Hearthsounds</title>
     <link rel="icon" href="https://us.battle.net/hearthstone/static/images/icons/favicon.ico?v=58-25" type="image/x-icon" />
     <link rel="shortcut icon" href="https://us.battle.net/hearthstone/static/images/icons/favicon.ico?v=58-25" type="image/x-icon"
     />
@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div class="hs-container">
+    <div id="hs-container">
         <div id="hs-audio-container">
         </div>
         <div id="audio-fail">
@@ -55,6 +55,18 @@
         <div id="current-score">Score: 0</div>
         <div id="endgame">
             <button id="restart-button">Play again [ALT + R]</button>
+        </div>
+        <div id="hs-landing-page">
+            <p><b>HOW TO PLAY:</b> You'll hear the sound of a random Hearthstone minion. Type your guess or hit skip
+                if you're not sure. Try to guess as many as you can in 60 seconds!</p>
+            <hr/>
+            <b>CONTROLS</b>
+            <ul>
+                <li><b>Alt + R</b> — play the sound again, or start a new game</li>
+                <li><b>Esc</b> — skip the current sound</li>
+                <li><b>Arrow keys</b> — cycle through suggestions</li>
+                <li><b>Tab / Shift + Tab</b> — cycle through suggestions</li>
+            </ul>
         </div>
     </div>
     <script src="card-data.js"></script>
