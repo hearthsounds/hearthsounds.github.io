@@ -13,18 +13,30 @@ body {
 }
 
 #hs-landing-page {
-    width: 500px;
+    width: 600px;
     text-align: left;
     margin: 0 auto;
     margin-bottom: 100px;
+    display: flex;
 }
 
-hr {
-    border: none;
-    border-bottom: 1px solid #d8d4d0;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    width: 98%;
+.hs-landing-item {
+    padding-top: 5px;
+    text-align: center;
+}
+
+.hs-landing-item ul {
+    padding-left: 15px;
+}
+
+.hs-landing-item li {
+    margin: 0 0 3px 0;
+    text-align: left;
+}
+
+.hs-landing-vertical {
+    border-left: 1px solid #d8d4d0;
+    margin: 0px 30px;
 }
 
 h1 {
@@ -34,7 +46,6 @@ h1 {
 
 p {
    text-align: justify;
-   font-size: 1.1em;
 }
 
 #suggestions ol {
@@ -66,13 +77,13 @@ p {
 }
 
 .suggestion-image {
-    z-index: 2; 
+    z-index: 2;
     position: absolute;
 }
 
 .suggestion-text {
-    z-index: -1; 
-    position: absolute; 
+    z-index: -1;
+    position: absolute;
     top: 420px;
     width: 300px;
 }
@@ -87,16 +98,36 @@ p {
 }
 
 #current-score {
-    padding-top: 10px;
+    font-size: 2em;
+    padding: 15px 0px 30px 0px;
 }
 
 #hs-timer {
     font-size: 2em;
-    padding: 10px;
+    padding: 5px;
 }
 
-#controls .buttons {
+#controls button {
     padding: 10px;
+    background-color: #B19670;
+    border: 1px solid #6E5839;
+    color:#faf8ef;
+    text-decoration:none;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+#endgame button {
+    padding: 10px;
+    margin-bottom: 30px;
+    background-color: #B19670;
+    border: 1px solid #6E5839;
+    color:#faf8ef;
+    text-decoration:none;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 600;
 }
 
 #card-guess {
