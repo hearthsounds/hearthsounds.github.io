@@ -208,13 +208,9 @@ function tabThroughSuggestions(isForwards) {
     nextToSelect.className = 'selected';
 }
 
-document.getElementById('sound-button').addEventListener('click', function () {
-    playCurrentSound();
-});
+document.getElementById('sound-button').addEventListener('click', playCurrentSound);
 
-document.getElementById('skip-button').addEventListener('click', function () {
-    skipSound();
-});
+document.getElementById('skip-button').addEventListener('click', skipSound);
 
 document.getElementById('restart-button').addEventListener('click', restartGame);
 
@@ -282,10 +278,26 @@ function updateSuggestionsUI(suggestions) {
         emptySuggestionElement.className = 'empty-suggestion';
         suggestionsList.appendChild(emptySuggestionElement);
     } else {
-        for (var i = 0; i < suggestions.length; i++) {
-            var isSelected = (i === 0 && getGameState() === IN_GAME_STATE); 
-            var li = createSuggestionElement(suggestions[i], isSelected);
-            suggestionsList.appendChild(li);
+        if (getGameState() === NEW_GAME_STATE) {
+            // We show a more helpful UI here than 3 blank cards
+            var instructionsElement = document.createElement('div');
+            instructionsElement.className = 'newgame-help-blanket';
+            var headingElement = document.createElement('h1');
+            headingElement.className = 'newgame-help-text';
+            var noobButton = document.createElement('button');
+            noobButton.className = 'newgame-help-button';
+            noobButton.innerHTML = 'Click here or press [ALT + R] for your first sound';
+            noobButton.addEventListener('click', playCurrentSound);
+            headingElement.innerHTML = 'Cards will appear here as you type';
+            instructionsElement.appendChild(headingElement);
+            instructionsElement.appendChild(noobButton);
+            suggestionsList.appendChild(instructionsElement);
+        } else {
+            for (var i = 0; i < suggestions.length; i++) {
+                var isSelected = (i === 0 && getGameState() === IN_GAME_STATE); 
+                var li = createSuggestionElement(suggestions[i], isSelected);
+                suggestionsList.appendChild(li);
+            }
         }
     }
 }

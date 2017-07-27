@@ -147,3 +147,26 @@ p {
     display: none;
   }
 }
+
+.newgame-help-blanket {
+    width: calc(100% - 420px);
+    height: 400px;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,.5);
+    margin: 20px auto;
+    border-radius: 20px;
+}
+
+.newgame-help-text {
+    color: #fff;
+    width: 100%;
+    align-self: flex-end;
+}
+
+.newgame-help-button {
+    align-self: flex-start;
+    margin-top: 20px;
+}
