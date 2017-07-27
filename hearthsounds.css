@@ -134,3 +134,16 @@ p {
     font-size: 2em;
     margin: 10px;
 }
+
+#mobile {
+  display: none;
+}
+
+@media(max-width: 1024px) {
+  #mobile {
+    display: block;
+  }
+  #hs-container {
+    display: none;
+  }
+}
