@@ -170,6 +170,7 @@ document.getElementById('card-guess').addEventListener('keyup', function (e) {
             e.target.value = '';
         }
         else {
+            shakeSuggestion(selectedSuggestionElement);
             playRandomFailSound();
         }
     }
@@ -203,6 +204,13 @@ function tabThroughSuggestions(isForwards) {
     }
     selected.className = '';
     nextToSelect.className = 'selected';
+}
+
+function shakeSuggestion(element) {
+    element.classList.remove('shake');
+    setTimeout(function() {
+        element.classList.add('shake');
+    });
 }
 
 document.getElementById('sound-button').addEventListener('click', playCurrentSound);
@@ -298,7 +306,6 @@ function updateSuggestionsUI(suggestions) {
         }
     }
 }
-
 
 function timerStart() {
     decrementTimer(1);
