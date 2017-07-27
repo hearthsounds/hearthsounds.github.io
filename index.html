@@ -78,6 +78,12 @@
         <div id="current-score">Score: 0</div>
         <div id="endgame">
             <button id="restart-button">Play again [ALT + R]</button>
+            <div style="display: flex; justify-content: center">
+              <iframe style="padding-right: 10px" src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Frissole.github.io%2Fhearthsounds%2F&width=106&layout=button_count&action=like&size=small&show_faces=false&share=true&height=46&appId" width="106" height="46" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+              <a class="twitter-share-button" id="tweet-button" href="">
+                Tweet
+              </a>
+            </div>
         </div>
         <div id="hs-landing-page">
             <div class="hs-landing-item">
@@ -100,6 +106,39 @@
     </div>
     <script src="card-data.js"></script>
     <script src="hearthsoundjs.js"></script>
+    <script>
+      var getMeme = function() {
+        var memes = [
+          'Better than a 4 mana 7/7',
+          'CRYSTALS! FRESH FROM KAZAKUS',
+          'Secret agent, coming through',
+          'I bought a funnel cake!',
+          'You wanna guess some cards? I wanna guess some cards!',
+          'Yeah but can you guess the murlocs?',
+          'What card says LEEEEEROOOOY JEEENKINS again?'
+        ];
+        var choice = Math.floor(Math.random() * memes.length);
+        return encodeURIComponent(memes[choice]);
+      };
+      document.getElementById('tweet-button').href = 'https://twitter.com/intent/tweet?text=' + getMeme() + '&url=https%3A%2F%2Frissole.github.io%2Fhearthsounds%2F';
+      window.twttr = (function(d, s, id) {
+        var js,
+          fjs = d.getElementsByTagName(s)[0],
+          t = window.twttr || {};
+        if (d.getElementById(id)) return t;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js, fjs);
+
+        t._e = [];
+        t.ready = function(f) {
+          t._e.push(f);
+        };
+
+        return t;
+      })(document, "script", "twitter-wjs");
+    </script>
 </body>
 
 </html>

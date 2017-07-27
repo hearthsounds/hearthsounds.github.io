@@ -112,6 +112,9 @@ function endGameState() {
     currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
     document.getElementById("controls").style.display = "none";
     document.getElementById("endgame").style.display = "block";
+    var tweetButton = document.getElementById("tweet-button");
+    var url = tweetButton.href;
+    tweetButton.href = url.replace(/\?text=.*?&/, '?text=SECRETAGENT&');
 }
 
 function getGameState() {
