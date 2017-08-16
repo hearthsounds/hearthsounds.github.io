@@ -2,8 +2,10 @@ body {
     width: 100%;
     font-family: sans-serif;
     letter-spacing: 1.2;
+    padding-bottom: 32px;
     background-color: #faf8ef;
     color: #303030;
+    overflow-x: hidden;
 }
 
 #hs-container {
@@ -16,7 +18,6 @@ body {
     width: 600px;
     text-align: left;
     margin: 0 auto;
-    margin-bottom: 100px;
     display: flex;
 }
 
@@ -141,12 +142,14 @@ p {
 
 .newgame-help-blanket {
     width: calc(100% - 420px);
+    min-width: 420px;
+    max-width: 900px;
     height: 400px;
     display: flex;
     flex-flow: row wrap;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(0,0,0,0.5);
     margin: 20px auto;
     border-radius: 20px;
 }
@@ -185,4 +188,12 @@ p {
   40%, 60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+.wholesome-text {
+  width: 600px;
+  margin: 0 auto;
+  text-align: justify;
+  margin-top: 100px;
+  color: gray;
 }
