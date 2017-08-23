@@ -219,10 +219,10 @@ document.getElementById('skip-button').addEventListener('click', skipSound);
 
 document.getElementById('restart-button').addEventListener('click', restartGame);
 
-if (/Mobi/.test(navigator.userAgent)) {
-  document.getElementById('hs-container').style.display = 'none';
-  document.getElementById('mobile').style.display = 'block';
-}
+// if (/Mobi/.test(navigator.userAgent)) {
+//   document.getElementById('hs-container').style.display = 'none';
+//   document.getElementById('mobile').style.display = 'block';
+// }
 
 function restartGame() {
     while (audioContainer.firstChild) {
