@@ -33,6 +33,7 @@ def extract_hearthsounds_data(card):
       sound = get_hearthpwn_sound(card)
       if not sound:
         print('> It\'s not there either :(')
+        return None
       else:
         print('> Found!')
 
