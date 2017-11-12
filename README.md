@@ -8,13 +8,13 @@ but we did leave in all the murlocs and dragons for those with astute hearing fo
 So test your skill and Hearthstone sound knowledge, we hope you enjoy our game and may RNGesus bless you in Hearthstone and the favour of the Benevolent Ben Brode always be upon you.
 
 These instructions can be found on the site as well -
-HOW TO PLAY
-You'll hear the sound of a random Hearthstone minion.
-Type your guess or hit skip if you're not sure.
-Try to guess as many as you can in 60 seconds!
+# How to play
+* You'll hear the sound of a random Hearthstone minion.
+* Type your guess or hit skip if you're not sure.
+* Try to guess as many as you can in 60 seconds!
 
-CONTROLS
-ALT + R — play the sound again, or start a new game
-ESC — skip the current sound
-Arrow keys — cycle through suggestions
-Tab / Shift + Tab — cycle through suggestions
+# Controls
+* ALT + R — play the sound again, or start a new game
+* ESC — skip the current sound
+* Arrow keys — cycle through suggestions
+* Tab / Shift + Tab — cycle through suggestions
