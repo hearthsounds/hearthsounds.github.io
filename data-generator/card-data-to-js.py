@@ -2,10 +2,15 @@ import requests
 import json
 from bs4 import BeautifulSoup
 
+SOUND_OVERRIDES = {
+  'Cobalt Scalebane': 'VO_ICC_027_Male_Dragon_Play_01.ogg',
+  'The Lich King': 'VO_ICC_239_Male_Human_Play_01.ogg'
+}
+
 def get_all_cards():
-    cards_request = requests.get('http://hearthstone.services.zam.com/v1/card?page=1&pageSize=99999&type=MINION&collectible=true')
-    card_data = cards_request.json()
-    return card_data
+  cards_request = requests.get('http://hearthstone.services.zam.com/v1/card?page=1&pageSize=99999&type=MINION&collectible=true')
+  card_data = cards_request.json()
+  return card_data
 
 def get_hearthpwn_sound(card):
   card_name_for_url = requests.utils.quote(card['name'])
@@ -25,26 +30,32 @@ def get_hearthpwn_sound(card):
   return sound.replace('http://media-Hearth.cursecdn.com/audio/card-sounds/sound/', '')
 
 def extract_hearthsounds_data(card):
-    sound = next((media['url'] for media in card['media'] if media['type'] == 'PLAY_SOUND'), '')
-    img = next((media['url'] for media in card['media'] if media['type'] == 'CARD_IMAGE'), '')
-    if not sound:
-      print('No play sound found for card %s' % (card['name']))
-      print('> Checking hearthpwn...')
-      sound = get_hearthpwn_sound(card)
-      if not sound:
-        print('> It\'s not there either :(')
-        return None
-      else:
-        print('> Found!')
+  sound = next((media['url'] for media in card['media'] if media['type'] == 'PLAY_SOUND'), '')
+  img = next((media['url'] for media in card['media'] if media['type'] == 'CARD_IMAGE'), '')
 
-    if not img:
-      print('No card image found for card %s' % (card['name']))
-    return {
-      'name': card['name'],
-      'sound': sound.replace('/hs/sounds/enus/', ''),
-      'img': img
-    }
+  if card['name'] in SOUND_OVERRIDES:
+    print('> Using sound override for card %s' % (card['name']))
+    sound = SOUND_OVERRIDES[card['name']]
+
+  if not sound:
+    print('No play sound found for card %s' % (card['name']))
+    print('> Checking hearthpwn...')
+    sound = get_hearthpwn_sound(card)
+    if not sound:
+      print('> It\'s not there either :( it will be excluded.')
+      return None
+    else:
+      print('> Found!')
+
+  if not img:
+    print('No card image found for card %s, it will be excluded.' % (card['name']))
+    return None
+  return {
+    'name': card['name'],
+    'sound': sound.replace('/hs/sounds/enus/', ''),
+    'img': img
+  }
 
 with open('card-data.js', 'w') as f:
-    card_data = map(extract_hearthsounds_data, get_all_cards())
-    f.write('CARDS=' + json.dumps(card_data) + ';')
+  card_data = filter(lambda c: c is not None, map(extract_hearthsounds_data, get_all_cards()))
+  f.write('CARDS=' + json.dumps(card_data) + ';')
