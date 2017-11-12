@@ -1,4 +1,4 @@
-# Hearthsounds
+# [Hearthsounds](https://hearthsounds.github.io/)
 
 We made Hearthsounds because one of the things we love most about Hearthstone is the personality of the game.
 The visuals and sounds of Hearthstone play a huge role in this and contribute to what makes the game so fun and memorable.
