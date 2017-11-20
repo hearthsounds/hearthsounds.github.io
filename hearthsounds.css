@@ -197,3 +197,17 @@ p {
   margin-top: 100px;
   color: gray;
 }
+
+.promo {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.promo > .hero-link > img {
+    width: 100%;
+}
+
+.promo > small {
+    display: inline-block;
+    padding: 5px 0 40px 0;
+}
