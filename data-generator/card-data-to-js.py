@@ -6,7 +6,7 @@ SOUND_OVERRIDES = {
   'Cobalt Scalebane': 'VO_ICC_027_Male_Dragon_Play_01.ogg',
   'The Lich King': 'VO_ICC_239_Male_Human_Play_01.ogg',
   'Crypt Lord': 'VO_ICC_807_Male_GiantBeetle_Play_02.ogg',
-  'Y\'Shaarj, Rage Unbound', 'VO_OG_133_Male_OldGod_Play_01.ogg',
+  'Y\'Shaarj, Rage Unbound': 'VO_OG_133_Male_OldGod_Play_01.ogg'
 }
 
 def get_all_cards():
@@ -14,13 +14,33 @@ def get_all_cards():
   card_data = cards_request.json()
   return card_data
 
-def get_hearthpwn_sound(card):
-  card_name_for_url = requests.utils.quote(card['name'])
-  hearthpwn_search_url = 'http://www.hearthpwn.com/find?q=%s&limit=1' % (card_name_for_url,)
-  search_response = requests.get(hearthpwn_search_url).json()
-  if not search_response:
-    return None
-  hearthpwn_card_url = 'http://www.hearthpwn.com' + search_response[0]['Url']
+def get_hearthpwn_cards():
+  HEARTHPWN_CARDS_URL = 'http://www.hearthpwn.com/cards?display=1&filter-premium=1&filter-type=4&page=%s'
+  last_first_card = None
+  page_num = 1
+  card_data = {}
+  print('Fetching hearthpwn cards list...')
+  while True:
+    page = BeautifulSoup(requests.get(HEARTHPWN_CARDS_URL % (page_num,)).text, 'html.parser')
+    card_listings = page.find_all('td', 'col-name')
+    first_card_name = card_listings[0].find('a').text
+
+    if (first_card_name == last_first_card):
+      break
+    else:
+      last_first_card = first_card_name
+
+    print('Fetched page %s...' % (page_num,))
+
+    for c in card_listings:
+      card_data[c.find('a').text] = c.find('a')['href']
+
+    page_num += 1
+
+  return card_data
+
+def get_hearthpwn_sound(path):
+  hearthpwn_card_url = 'http://www.hearthpwn.com' + path
 
   card_page = BeautifulSoup(requests.get(hearthpwn_card_url).text, 'html.parser')
   play_sound_element = card_page.find(id='soundPlay1')
@@ -32,7 +52,8 @@ def get_hearthpwn_sound(card):
   return sound.replace('http://media-Hearth.cursecdn.com/audio/card-sounds/sound/', '')
 
 def extract_hearthsounds_data(card):
-  sound = next((media['url'] for media in card['media'] if media['type'] == 'PLAY_SOUND'), '')
+  global hearthpwn_urls
+  sound = None
   img = next((media['url'] for media in card['media'] if media['type'] == 'CARD_IMAGE'), '')
 
   if card['name'] in SOUND_OVERRIDES:
@@ -40,14 +61,16 @@ def extract_hearthsounds_data(card):
     sound = SOUND_OVERRIDES[card['name']]
 
   if not sound:
-    print('No play sound found for card %s' % (card['name']))
-    print('> Checking hearthpwn...')
-    sound = get_hearthpwn_sound(card)
+    print('Fetching hearthpwn play sound found for %s' % (card['name']))
+    sound = get_hearthpwn_sound(hearthpwn_urls[card['name']])
+    if not sound:
+      print('> Not there, falling back to hearthhead...')
+
+  if not sound:
+    sound = next((media['url'] for media in card['media'] if media['type'] == 'PLAY_SOUND'), '')
     if not sound:
       print('> It\'s not there either :( it will be excluded.')
       return None
-    else:
-      print('> Found!')
 
   if not img:
     print('No card image found for card %s, it will be excluded.' % (card['name']))
@@ -59,5 +82,7 @@ def extract_hearthsounds_data(card):
   }
 
 with open('card-data.js', 'w') as f:
+  global hearthpwn_urls
+  hearthpwn_urls = get_hearthpwn_cards()
   card_data = filter(lambda c: c is not None, map(extract_hearthsounds_data, get_all_cards()))
   f.write('CARDS=' + json.dumps(card_data) + ';')

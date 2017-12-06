@@ -1,0 +1,32 @@
+<html>
+<head>
+<script src="../card-data.js"></script>
+</head>
+<body>
+
+<div id="master" class="card" style="padding: 10px 0">
+    <span class="name">Card name</span>
+    <span>|</span>
+    <label>
+        isGurgle
+        <input type="checkbox" name="isGurgle" />
+    </label>
+    <span>|</span>
+    <label>
+        soundFileName
+        <input name="soundFileName" />
+    </label>
+</div>
+
+<script>
+var master = document.getElementById('master');
+CARDS.forEach(function(card) {
+    var clone = master.cloneNode(true);
+    clone.getElementsByClassName('name')[0].innerHTML = card.name;
+    clone.querySelector('[name=soundFileName]').value = card.sound;
+    document.body.appendChild(clone);
+});
+master.style.display = 'none';
+</script>
+</body>
+</html>
