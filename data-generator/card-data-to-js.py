@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 SOUND_OVERRIDES = {
   'Cobalt Scalebane': 'VO_ICC_027_Male_Dragon_Play_01.ogg',
   'The Lich King': 'VO_ICC_239_Male_Human_Play_01.ogg',
-  'Crypt Lord': 'VO_ICC_807_Male_GiantBeetle_Play_02.ogg'
+  'Crypt Lord': 'VO_ICC_807_Male_GiantBeetle_Play_02.ogg',
+  'Y\'Shaarj, Rage Unbound', 'VO_OG_133_Male_OldGod_Play_01.ogg',
 }
 
 def get_all_cards():
