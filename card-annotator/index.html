@@ -1,6 +1,11 @@
 <html>
 <head>
 <script src="../card-data.js"></script>
+<style>
+.soundPlay {
+    cursor: pointer;
+}
+</style>
 </head>
 <body>
 
@@ -13,17 +18,28 @@
     </label>
     <span>|</span>
     <label>
-        soundFileName
-        <input name="soundFileName" />
+        isSoundIncorrect
+        <input type="checkbox" name="isSoundIncorrect" />
     </label>
+    <span class="soundPlay">
+        &#9658;
+        <audio></audio>
+    </span>
 </div>
 
 <script>
+var SOUNDS_BASE_URL = 'http://media-hearth.cursecdn.com/audio/card-sounds/sound/';
+
 var master = document.getElementById('master');
 CARDS.forEach(function(card) {
     var clone = master.cloneNode(true);
     clone.getElementsByClassName('name')[0].innerHTML = card.name;
-    clone.querySelector('[name=soundFileName]').value = card.sound;
+    var soundPlayer = clone.querySelector('.soundPlay');
+    soundPlayer.addEventListener('click', function() {
+        this.getElementsByTagName('audio')[0].play();
+    });
+    clone.querySelector('.soundPlay > audio').src = SOUNDS_BASE_URL + card.sound;
+
     document.body.appendChild(clone);
 });
 master.style.display = 'none';

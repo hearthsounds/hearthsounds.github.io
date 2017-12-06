@@ -1,6 +1,9 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+import sys
+import re
+import os
 
 SOUND_OVERRIDES = {
   'Cobalt Scalebane': 'VO_ICC_027_Male_Dragon_Play_01.ogg',
@@ -62,15 +65,16 @@ def extract_hearthsounds_data(card):
 
   if not sound:
     print('Fetching hearthpwn play sound found for %s' % (card['name']))
-    sound = get_hearthpwn_sound(hearthpwn_urls[card['name']])
-    if not sound:
-      print('> Not there, falling back to hearthhead...')
+    if card['name'] in hearthpwn_urls:
+      sound = get_hearthpwn_sound(hearthpwn_urls[card['name']])
 
   if not sound:
+    print('> Not there, falling back to hearthhead...')
     sound = next((media['url'] for media in card['media'] if media['type'] == 'PLAY_SOUND'), '')
-    if not sound:
-      print('> It\'s not there either :( it will be excluded.')
-      return None
+
+  if not sound:
+    print('> It\'s not there either :( it will be excluded.')
+    return None
 
   if not img:
     print('No card image found for card %s, it will be excluded.' % (card['name']))
@@ -81,8 +85,19 @@ def extract_hearthsounds_data(card):
     'img': img
   }
 
-with open('card-data.js', 'w') as f:
-  global hearthpwn_urls
-  hearthpwn_urls = get_hearthpwn_cards()
-  card_data = filter(lambda c: c is not None, map(extract_hearthsounds_data, get_all_cards()))
-  f.write('CARDS=' + json.dumps(card_data) + ';')
+if len(sys.argv) > 1:
+  first_card_index = next(i for i,v in enumerate(all_cards) if v['name'] == sys.argv[1])
+  all_cards = all_cards[first_card_index:]
+  print('Starting from card index %s (%s)' % (first_card_index, sys.argv[1]))
+
+all_cards = get_all_cards()
+hearthpwn_urls = get_hearthpwn_cards()
+
+for card in all_cards:
+  if card['set'] == 'LOOTAPALOOZA':
+    continue
+  card_data = extract_hearthsounds_data(card)
+  if card_data is None:
+    continue
+  with open('temp-card-data/' + re.sub(r'[^a-zA-Z0-9]', '', card['name']).lower() + '.json', 'w') as f:
+    f.write(json.dumps(card_data))
