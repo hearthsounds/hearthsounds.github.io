@@ -2,6 +2,7 @@ var audioContainer = document.getElementById('hs-audio-container');
 var failAudioContainer = document.getElementById('audio-fail')
 var inputBox = document.getElementById('card-guess');
 var currentScoreElement = document.getElementById('current-score');
+var soundsYouHeardElement = document.getElementById('sounds-you-heard');
 var timerElement = document.getElementById('hs-timer');
 
 var MAX_TIMER = 60;
@@ -20,6 +21,7 @@ var ESC_KEY_CODE = 27;
 var timer = MAX_TIMER + 1;
 var sounds = [];
 var availableSoundIndexes = [];
+var skippedSounds = [];
 var currentScore = 0;
 var currentSoundIndex = 0;
 var timerInterval;
@@ -67,6 +69,7 @@ function playCurrentSound() {
 }
 
 function skipSound() {
+    skippedSounds.push(sounds[currentSoundIndex].name)
     decrementTimer(3);
     incrementSoundIndex();
     playCurrentSound();
@@ -109,9 +112,16 @@ inputBox.focus();
 updateUIForInput('');
 
 function endGameState() {
-    currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br> The last card was: " + sounds[currentSoundIndex].name;
+    console.log('SKIPPED SOUNDS', skippedSounds)
+    const soundsYouHeardList = sounds.filter((sound, index) => index <= currentSoundIndex)    
+    currentScoreElement.innerHTML = "Well done! Score: " + currentScore + "<br>"
+    const soundsYouHeardWithSkips = soundsYouHeardList.map(sound => 
+        skippedSounds.includes(sound.name) ? `${sound.name} ❌` : `${sound.name} ✅`);
+    soundsYouHeardWithSkips[soundsYouHeardWithSkips.length - 1] = sounds[currentSoundIndex].name
+    soundsYouHeardElement.innerHTML = soundsYouHeardWithSkips.map(sound => `<li>${sound}</li>`).join(' ');
     document.getElementById("controls").style.display = "none";
     document.getElementById("endgame").style.display = "block";
+    document.getElementById("sounds-you-heard-container").style.display = "inline-block";    
 }
 
 function getGameState() {
@@ -241,6 +251,7 @@ function restartGame() {
     document.getElementById("skip-button").setAttribute('disabled', 1);
     document.getElementById("controls").style.display = "block";
     document.getElementById("endgame").style.display = "none";
+    document.getElementById("sounds-you-heard-container").style.display = "none";        
     inputBox.focus();
 }
 
