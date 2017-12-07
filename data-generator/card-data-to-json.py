@@ -6,10 +6,8 @@ import re
 import os
 
 SOUND_OVERRIDES = {
-  'Cobalt Scalebane': 'VO_ICC_027_Male_Dragon_Play_01.ogg',
   'The Lich King': 'VO_ICC_239_Male_Human_Play_01.ogg',
-  'Crypt Lord': 'VO_ICC_807_Male_GiantBeetle_Play_02.ogg',
-  'Y\'Shaarj, Rage Unbound': 'VO_OG_133_Male_OldGod_Play_01.ogg'
+  'Primalfin Totem': None
 }
 
 def get_all_cards():
@@ -62,6 +60,8 @@ def extract_hearthsounds_data(card):
   if card['name'] in SOUND_OVERRIDES:
     print('> Using sound override for card %s' % (card['name']))
     sound = SOUND_OVERRIDES[card['name']]
+    if not sound:
+      return None
 
   if not sound:
     print('Fetching hearthpwn play sound found for %s' % (card['name']))

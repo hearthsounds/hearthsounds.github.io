@@ -1,48 +1,216 @@
 <html>
 <head>
-<script src="../card-data.js"></script>
-<style>
-.soundPlay {
-    cursor: pointer;
-}
-</style>
+    <script src="../card-data.js"></script>
+
+    <style>
+    .soundPlay {
+        cursor: pointer;
+    }
+    .focusRow {
+        background-color: #e6f2ff;
+    }
+    #generate {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        font-size: 20pt;
+    }
+    </style>
 </head>
 <body>
+<pre>
+Instructions:
+> Up/down = select row
+> Enter = toggle growl and move next
+> Backspace = move back and unmark as growl ("undo" kind of)
+> Space = play/pause sound
 
+Click "Generate output json" in the top right to download a text file of your marks.
+</pre>
 <div id="master" class="card" style="padding: 10px 0">
     <span class="name">Card name</span>
     <span>|</span>
     <label>
-        isGurgle
-        <input type="checkbox" name="isGurgle" />
+        isGrowl
+        <input type="checkbox" name="isGrowl"/>
     </label>
     <span>|</span>
-    <label>
-        isSoundIncorrect
-        <input type="checkbox" name="isSoundIncorrect" />
-    </label>
     <span class="soundPlay">
-        &#9658;
+        &#x23ef;
         <audio></audio>
     </span>
 </div>
 
+<button id="generate">Generate output json</button>
+
 <script>
 var SOUNDS_BASE_URL = 'http://media-hearth.cursecdn.com/audio/card-sounds/sound/';
 
+
+function playPauseRow(row) {
+    var audioTag = row.getElementsByTagName('audio')[0];
+    if (audioTag.paused) {
+        audioTag.play();
+    } else {
+        audioTag.pause();
+        audioTag.currentTime = 0;
+    }
+}
+
+function stopAllSounds() {
+    ALL_ROWS.forEach(function(row) {
+        var audio = row.getElementsByTagName('audio')[0];
+        audio.pause();
+        audio.currentTime = 0;
+    })
+}
+
+
+// generate rows
 var master = document.getElementById('master');
 CARDS.forEach(function(card) {
     var clone = master.cloneNode(true);
+    clone.removeAttribute('id');
     clone.getElementsByClassName('name')[0].innerHTML = card.name;
     var soundPlayer = clone.querySelector('.soundPlay');
     soundPlayer.addEventListener('click', function() {
-        this.getElementsByTagName('audio')[0].play();
+        playPauseRow(this);
     });
     clone.querySelector('.soundPlay > audio').src = SOUNDS_BASE_URL + card.sound;
+    clone.addEventListener('click', function() {
+        setFocusRow(this);
+    });
 
     document.body.appendChild(clone);
 });
-master.style.display = 'none';
+document.body.removeChild(master);
+
+ALL_ROWS = Array.prototype.slice.call(document.getElementsByClassName('card'));
+
+function isScrolledIntoView(el) {
+    var rect = el.getBoundingClientRect();
+    var elemTop = rect.top;
+    var elemBottom = rect.bottom;
+
+    // Only completely visible elements return true:
+    var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+    // Partially visible elements return true:
+    //isVisible = elemTop < window.innerHeight && elemBottom >= 0;
+    return isVisible;
+}
+
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+document.getElementById('generate').addEventListener('click', function(e) {
+    e.preventDefault();
+    var output = ALL_ROWS.map(function(row) {
+        if (row.querySelector('[name=isGrowl]').checked) {
+            return {
+                name: row.getElementsByClassName('name')[0].innerText,
+                isGrowl: true
+            }
+        }
+        return false;
+    }).filter(function(obj) {
+        return obj !== false;
+    });
+    download('growls.json', JSON.stringify(output));
+});
+
+window.onbeforeunload = function (e) {
+    var anyChecked = ALL_ROWS.some(function(row) {
+        return row.querySelector('[name=isGrowl]').checked;
+    });
+    if (anyChecked) {
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'Sure?';
+        }
+
+        // For Safari
+        return 'Sure?';
+    }
+};
+
+function clearFocus() {
+    ALL_ROWS.forEach(function(row) {
+        row.classList.remove('focusRow');
+    });
+}
+
+function focusUp() {
+    var focus = getFocusRow();
+    if (focus.previousSibling.className.indexOf('card') > -1) {
+        setFocusRow(focus.previousSibling);
+        if (!isScrolledIntoView(focus.previousSibling)) {
+            window.scrollTo(0, focus.previousSibling.offsetTop);
+        }
+        return focus.previousSibling;
+    }
+    return focus;
+}
+function focusDown() {
+    var focus = getFocusRow();
+    if (focus.nextSibling.className.indexOf('card') > -1) {
+        setFocusRow(focus.nextSibling);
+        if (!isScrolledIntoView(focus.nextSibling)) {
+            window.scrollTo(0, focus.nextSibling.offsetTop - window.innerHeight + 48);
+        }
+        return focus.nextSibling;
+    }
+    return focus;
+}
+function getFocusRow() {
+    return document.getElementsByClassName('focusRow')[0];
+}
+function setFocusRow(row) {
+    clearFocus();
+    row.classList.add('focusRow');
+    stopAllSounds();
+    row.getElementsByTagName('audio')[0].play();
+}
+
+setFocusRow(document.getElementsByClassName('card')[0]);
+window.scrollTo(0, 0);
+document.addEventListener('keydown', function(e) {
+    if (e.keyCode === 38) {
+        e.preventDefault();
+        focusUp();
+    } else if (e.keyCode === 40) {
+        e.preventDefault();
+        focusDown();
+    }
+    if (e.keyCode === 32) {
+        e.preventDefault();
+        playPauseRow(getFocusRow());
+    }
+    if (e.keyCode === 13) {
+        e.preventDefault();
+        var checkbox = getFocusRow().querySelector('[name=isGrowl]');
+        checkbox.checked = !checkbox.checked;
+        focusDown();
+    }
+    if (e.keyCode === 8) {
+        e.preventDefault();
+        focusUp();
+        var checkbox = getFocusRow().querySelector('[name=isGrowl]');
+        checkbox.checked = false;
+    }
+})
+
 </script>
 </body>
 </html>
