@@ -82,7 +82,8 @@ def extract_hearthsounds_data(card):
   return {
     'name': card['name'],
     'sound': sound.replace('/hs/sounds/enus/', ''),
-    'img': img
+    'img': img,
+    'format': card['format']
   }
 
 if len(sys.argv) > 1:
