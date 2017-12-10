@@ -134,6 +134,19 @@
             Hearthstone and the favour of the Benevolent Ben Brode always be upon you.</small>
         </div>
     </div>
+
+<div id="settings" class="newgame-help-blanket" style="display: none">
+    <h1 class="newgame-help-text">Cards will appear here as you type</h1>
+    <div style="width: 100%">
+        <button  onclick="playCurrentSound()">Click here or press [ALT + R] for your first sound</button>
+    </div>
+    <div class="newgame-options">
+        <h4>Options</h4>
+        <label><input onchange="updateSetting(event)" class="setting-remove-growls" type="checkbox" checked />Remove growls</label>
+        <label><input onchange="updateSetting(event)" class="setting-remove-wild" type="checkbox" />Standard only</label>
+    </div>
+</div>
+
     <script src="card-data.js"></script>
     <script src="hearthsoundjs.js"></script>
     <script>

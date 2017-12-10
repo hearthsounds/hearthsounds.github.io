@@ -13,7 +13,7 @@ for filename in os.listdir(FOLDER_NAME):
 
   # find this card's .part files, and merge their data
   card_name = filename.split('.')[0]
-  files_for_card = [name for name in os.listdir(FOLDER_NAME) if name.startswith(card_name)]
+  files_for_card = [name for name in os.listdir(FOLDER_NAME) if name.startswith(card_name + '.')]
   merged = {}
   for filename in files_for_card:
     merged.update(json.loads(open(FOLDER_NAME + '/' + filename).read()))

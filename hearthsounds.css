@@ -161,8 +161,12 @@ p {
 }
 
 .newgame-help-button {
-    align-self: flex-start;
     margin-top: 20px;
+}
+
+.newgame-options {
+    color: #fff;
+    width: 100%;
 }
 
 .shake {

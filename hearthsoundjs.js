@@ -23,11 +23,13 @@ var availableSoundIndexes = [];
 var currentScore = 0;
 var currentSoundIndex = 0;
 var timerInterval;
+var settings = {};
+var cardPool = CARDS;
 
 function seedCards(cardsToAdd) {
     if (availableSoundIndexes.length === 0) {
         // seed available sound availableSoundIndexes
-        for (var i = 0; i < CARDS.length; i++) {
+        for (var i = 0; i < cardPool.length; i++) {
             availableSoundIndexes.push(i);
         }
     }
@@ -38,7 +40,7 @@ function seedCards(cardsToAdd) {
         // store chosen CARDS index number and remove it from availableSoundIndexes
         var chosenSoundIndex = availableSoundIndexes.splice(randomNumber, 1)[0];
         // add chosen CARDS index info to sounds array
-        sounds.push(CARDS[chosenSoundIndex]);
+        sounds.push(cardPool[chosenSoundIndex]);
     }
 
     // seed audio for new cards
@@ -104,8 +106,9 @@ function pauseAllSounds() {
 }
 
 // ON BODY LOAD
-seedCards(10);
 inputBox.focus();
+registerSettings();
+updateCardPool();
 updateUIForInput('');
 
 function endGameState() {
@@ -224,6 +227,55 @@ document.getElementById('restart-button').addEventListener('click', restartGame)
 //   document.getElementById('mobile').style.display = 'block';
 // }
 
+function registerSettings() {
+    var masterSettingsElement = document.getElementById('settings');
+    var settingElements = masterSettingsElement.getElementsByTagName('input');
+    for (var i = 0; i < settingElements.length; ++i) {
+        var className = settingElements[i].className;
+        var defaultValue = settingElements[i].hasAttribute('checked');
+        var storageValue = window.localStorage.getItem(className);
+        if (storageValue === null) {
+            settings[className] = defaultValue;
+        } else {
+            settings[className] = storageValue === 'true';
+        }
+    }
+}
+
+function updateSettingsUIFromStorage(settingsElement) {
+    for (settingName in settings) {
+        settingsElement.getElementsByClassName(settingName)[0].checked = settings[settingName];
+    }
+}
+
+function updateSetting(e) {
+    var settingElement = e.target;
+    var settingName = e.target.className;
+    settings[settingName] = e.target.checked;
+    window.localStorage.setItem(settingName, e.target.checked);
+    updateCardPool();
+}
+
+function updateCardPool() {
+    cardPool = CARDS;
+    if (settings['setting-remove-growls']) {
+        cardPool = cardPool.filter(function(c) {
+            return c.isGrowl !== true;
+        });
+    }
+    if (settings['setting-remove-wild']) {
+        cardPool = cardPool.filter(function(c) {
+            return c.format === 'STANDARD';
+        });
+    }
+    while (audioContainer.firstChild) {
+        audioContainer.removeChild(audioContainer.firstChild);
+    }
+    sounds = [];
+    availableSoundIndexes = [];
+    seedCards(10);
+}
+
 function restartGame() {
     while (audioContainer.firstChild) {
         audioContainer.removeChild(audioContainer.firstChild);
@@ -290,17 +342,10 @@ function updateSuggestionsUI(suggestions) {
     } else {
         if (getGameState() === NEW_GAME_STATE) {
             // We show a more helpful UI here than 3 blank cards
-            var instructionsElement = document.createElement('div');
-            instructionsElement.className = 'newgame-help-blanket';
-            var headingElement = document.createElement('h1');
-            headingElement.className = 'newgame-help-text';
-            var noobButton = document.createElement('button');
-            noobButton.className = 'newgame-help-button';
-            noobButton.innerHTML = 'Click here or press [ALT + R] for your first sound';
-            noobButton.addEventListener('click', playCurrentSound);
-            headingElement.innerHTML = 'Cards will appear here as you type';
-            instructionsElement.appendChild(headingElement);
-            instructionsElement.appendChild(noobButton);
+            var instructionsElement = document.querySelector('.newgame-help-blanket').cloneNode(true);
+            instructionsElement.removeAttribute('id');
+            updateSettingsUIFromStorage(instructionsElement);
+            instructionsElement.style.display = 'flex';
             suggestionsList.appendChild(instructionsElement);
         } else {
             for (var i = 0; i < suggestions.length; i++) {
